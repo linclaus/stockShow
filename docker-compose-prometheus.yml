@@ -1,0 +1,41 @@
+version: '2'
+
+networks:
+    monitor:
+        driver: bridge
+
+services:
+    prometheus:
+        image: linclaus/prometheus:v2.13.1
+        container_name: prometheus
+        hostname: prometheus
+        restart: always
+        volumes:
+            - /home/linclaus/prometheus/prometheus-general-rule.yml:/etc/prometheus/prometheus-general-rule.yml
+            - /home/linclaus/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+        ports:
+            - "9090:9090"
+        networks:
+            - monitor
+
+    alertmanager:
+        image: linclaus/alertmanager:v0.19.4
+        container_name: alertmanager
+        hostname: alertmanager
+        restart: always
+        volumes:
+            - /home/linclaus/prometheus/alertmanager.yml:/etc/alertmanager/config.yml
+        ports:
+            - "9093:9093"
+        networks:
+            - monitor
+
+    grafana:
+        image: linclaus/grafana:7.0.3
+        container_name: grafana
+        hostname: grafana
+        restart: always
+        ports:
+            - "3000:3000"
+        networks:
+            - monitor
